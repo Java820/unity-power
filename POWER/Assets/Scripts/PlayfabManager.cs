@@ -17,7 +17,7 @@ public class PlayfabManager : MonoBehaviour
     [SerializeField] GameObject menuPanel;
     [SerializeField] GameObject loadingPanel;
     [SerializeField] GameObject[] hidableObjects;
-    TextMeshProUGUI versionText;
+    [SerializeField] TextMeshProUGUI versionText;
 
     string id;
     public bool isLogged;
@@ -29,17 +29,8 @@ public class PlayfabManager : MonoBehaviour
     void Awake()
     {
         gameData = this.gameObject.GetComponent<GameData>();
-        versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
+        //versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
 
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
 
     }
 
@@ -251,7 +242,7 @@ public class PlayfabManager : MonoBehaviour
             gameData.playerSkin = result.Data["Skin"].Value;
             //Debug.Log(result.Data["Levels"].Value);
 
-            gameData.gameDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(result.Data["Levels"].Value);
+            gameData.gameDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(result.Data["GameDictionary"].Value);
 
             //StartCoroutine(UpdatePlayer());
             isLogged = true;
@@ -293,14 +284,14 @@ public class PlayfabManager : MonoBehaviour
     public void SaveLevelsDictionary()
     {
         // Convertir los diccionarios en cadenas JSON
-        string levelDicJson = JsonConvert.SerializeObject(gameData.gameDictionary);
+        string gameDicJson = JsonConvert.SerializeObject(gameData.gameDictionary);
 
         // Crear una solicitud para guardar los datos del jugador en PlayFab
         UpdateUserDataRequest request = new UpdateUserDataRequest
         {
             Data = new Dictionary<string, string>
                 {
-                    { "GameDictionary", levelDicJson },
+                    { "GameDictionary", gameDicJson },
                 }
         };
 
