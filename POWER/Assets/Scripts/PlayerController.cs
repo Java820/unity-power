@@ -15,6 +15,15 @@ public class PlayerController : MonoBehaviour
     Animator playerAnim;
     Rigidbody2D body;
 
+    public int skinNr;
+
+    public Skins[] skins;
+    SpriteRenderer spriteRenderer;
+
+    public int spriteNr;
+
+
+
     void Awake()
     {
         playerAnim = GetComponent<Animator>();
@@ -81,12 +90,11 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public int skinNr;
-
-    public Skins[] skins;
-    SpriteRenderer spriteRenderer;
-
-    public int spriteNr;
+    public void SetupSkin(string id)
+    {
+        string[] idString = id.Split(';');
+        skinNr = int.Parse(idString[1]);
+    }
 
     void LateUpdate()
     {

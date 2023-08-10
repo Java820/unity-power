@@ -8,14 +8,25 @@ using UnityEngine.UI;
 public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
 {
     GameData gameData;
+    PlayfabManager playfabManager;
+    PlayerController playerController;
 
     [SerializeField] Image itemImage;
     [SerializeField] Sprite itemSprite;
     [SerializeField] TextMeshProUGUI priceText;
+    [SerializeField] TextMeshProUGUI nameText;
     public double price;
     public string nameId;
     public bool isBuyed;
     public bool isEquipped;
+
+    void Awake()
+    {
+        gameData = GameObject.Find("Managers").GetComponent<GameData>();
+        playfabManager = GameObject.Find("Managers").GetComponent<PlayfabManager>();
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+    }
+
     void Start()
     {
         itemImage.sprite = itemSprite;
@@ -31,6 +42,7 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
         {
             priceText.text = "$" + price.ToString();
         }
+        nameText.text = Lean.Localization.LeanLocalization.GetTranslationText(nameId);
     }
 
     public int CompareTo(SellingItem other)
@@ -39,7 +51,7 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
         return price.CompareTo(other.price);
     }
 
-    void Button()
+    public void ItemButton()
     {
         if (isBuyed)
         {
@@ -49,6 +61,8 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
         {
             Buy();
         }
+        playfabManager.SavePlayerData();
+        playfabManager.SaveGameDictionary();
     }
 
     void Buy() 
@@ -64,7 +78,11 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
     }
 
     void Equip()
-    { 
-    
+    {
+        if (nameId.StartsWith("skin"))
+        {
+            gameData.playerSkin = nameId;
+            playerController.SetupSkin(nameId);
+        }
     }
 }

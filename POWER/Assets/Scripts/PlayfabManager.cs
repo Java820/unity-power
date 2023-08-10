@@ -25,10 +25,12 @@ public class PlayfabManager : MonoBehaviour
     public bool isUserNew = false;
     GameData gameData;
     GameManager gameManager;
+    PlayerController playerController;
 
     void Awake()
     {
         gameData = this.gameObject.GetComponent<GameData>();
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         //versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
 
 
@@ -44,10 +46,18 @@ public class PlayfabManager : MonoBehaviour
         id = SystemInfo.deviceUniqueIdentifier;
         versionText.text = "v: " + Application.version;
         //LeanTween.moveY(logo.GetComponent<RectTransform>(), 10f, 1.75f).setLoopPingPong().setEase(easeType);
-        CloseLoadingPanel();
+        menuPanel.SetActive(false);
+        playerController.SetupSkin(gameData.playerSkin);
     }
 
-
+    private void OnDisable()
+    {
+        if (isLogged)
+        {
+            SaveGameDictionary();
+            SavePlayerData();
+        }
+    }
 
     public void PlayButton()
     {
@@ -202,7 +212,7 @@ public class PlayfabManager : MonoBehaviour
             else
             {
                 SavePlayerData();
-                SaveLevelsDictionary();
+                SaveGameDictionary();
             }
 
         }
@@ -254,7 +264,7 @@ public class PlayfabManager : MonoBehaviour
         }
 
         CloseLoadingPanel();
-        menuPanel.SetActive(false);
+        newStart();
     }
     public void SavePlayerData()
     {
@@ -277,11 +287,11 @@ public class PlayfabManager : MonoBehaviour
 
     private void OnDataSend(UpdateUserDataResult result)
     {
-        //Debug.Log("Player data sent!");
+        Debug.Log("Player data sent!");
 
     }
 
-    public void SaveLevelsDictionary()
+    public void SaveGameDictionary()
     {
         // Convertir los diccionarios en cadenas JSON
         string gameDicJson = JsonConvert.SerializeObject(gameData.gameDictionary);
