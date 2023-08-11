@@ -16,12 +16,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] EnergyGenerator[] nuclearFisionGenerators;
     [SerializeField] EnergyGenerator[] nuclearFusionGenerators;
 
+    PlayfabManager playfabManager;
+    GameData gameData;
 
+    float actualBoostTimer = 0;
 
     void Awake()
     {
         //UpdateQuantity();
-
+        playfabManager = GameObject.Find("Managers").GetComponent<PlayfabManager>();
+        gameData = GameObject.Find("Managers").GetComponent<GameData>();
 
     }
     public void UpdateQuantity()
@@ -71,12 +75,26 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-
+        if (actualBoostTimer > 0)
+        {
+            actualBoostTimer -= 1 * Time.deltaTime;
+            gameData.playerMultiplier = 2f;
+        }
+        else
+        {
+            gameData.playerMultiplier = 1f;
+        }
     }
 
     public void OpenLink(string url)
     {
         Application.OpenURL(url);
+    }
+
+    public void GoldMultiplierBoost(int goldAmount)
+    {
+        actualBoostTimer += goldAmount * 60;
+        playfabManager.UseVC("GO", Convert.ToInt32(goldAmount));
     }
 
 }

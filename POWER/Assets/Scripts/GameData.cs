@@ -13,7 +13,7 @@ public class GameData : MonoBehaviour
     public int playerPower;
     public int dummyPower;
     public double playerMoney;
-    public double playerMultiplier;
+    public double playerMultiplier = 1;
     public double exchange;
 
 
