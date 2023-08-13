@@ -13,12 +13,15 @@ public class GameData : MonoBehaviour
     public int playerPower;
     public int dummyPower;
     public double playerMoney;
+    public int playerGold;
     public double playerMultiplier = 1;
     public double exchange;
 
+    public int adsEnergy;
 
 
     [SerializeField] TextMeshProUGUI moneyText;
+    [SerializeField] TextMeshProUGUI goldText;
     [SerializeField] TextMeshProUGUI powerText;
     [SerializeField] LeanTweenType easeType;
     public Dictionary<string, bool> gameDictionary = new Dictionary<string, bool>();
@@ -33,6 +36,7 @@ public class GameData : MonoBehaviour
     {
         powerText.text = playerPower.ToString() + "<sprite=0>";
         moneyText.text = "$" + playerMoney.ToString();
+        goldText.text = "<sprite=1>" + playerGold.ToString();
     }
 
 

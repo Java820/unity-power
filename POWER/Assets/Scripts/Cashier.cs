@@ -28,12 +28,12 @@ public class Cashier : MonoBehaviour
 
     double CalculateSellPrice(int power)
     {
-        double sellPrice = ((power * gameData.exchange) * cashierMultiplier) * gameData.playerMultiplier;
+        double sellPrice = ((power * gameData.exchange) * cashierMultiplier);
         return sellPrice;
     }
     double CalculateAdSellPrice(int power)
     {
-        double sellPrice = ((power * gameData.exchange) * cashierMultiplier) * gameData.playerMultiplier;
+        double sellPrice = ((power * gameData.exchange) * cashierMultiplier);
         sellPrice += sellPrice * 0.20;
         return sellPrice;
     }

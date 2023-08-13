@@ -31,15 +31,17 @@ public class PlayfabManager : MonoBehaviour
     {
         gameData = this.gameObject.GetComponent<GameData>();
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-        //versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
+        versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
 
 
     }
 
     private void Start()
     {
-        LeanTween.rotateAround(loadingPanel.transform.GetChild(0).gameObject, new Vector3(0, 0, 1), 360f, 2f).setLoopClamp();
+        LeanTween.rotateAround(loadingPanel.transform.GetChild(0).gameObject, new Vector3(0, 0, 1), -360f, 2f).setLoopClamp();
         loadingPanel.SetActive(false);
+        versionText.text = "v: " + Application.version;
+
     }
     public void newStart()
     {
@@ -179,7 +181,7 @@ public class PlayfabManager : MonoBehaviour
     private void OnCurrencyChange(ModifyUserVirtualCurrencyResult result)
     {
         Debug.Log("Added Currencies");
-        GetCurrencies();
+        GetInventory();
     }
 
 
@@ -200,7 +202,7 @@ public class PlayfabManager : MonoBehaviour
 
     void OnTitleDataSuccess(GetTitleDataResult result)
     {
-        GetCurrencies();
+        GetInventory();
         if (int.Parse(result.Data["titleVersion"].Substring(result.Data["titleVersion"].LastIndexOf('.') + 1)) <= int.Parse(Application.version.Substring(Application.version.LastIndexOf('.') + 1)))
         {
             GetCatalog();
@@ -208,6 +210,7 @@ public class PlayfabManager : MonoBehaviour
             if (isUserNew == false)
             {
                 GetPlayerData();
+                GetInventory();
             }
             else
             {
@@ -309,7 +312,7 @@ public class PlayfabManager : MonoBehaviour
         PlayFabClientAPI.UpdateUserData(request, OnDataSend, OnError);
     }
 
-    public void GetCurrencies()
+    public void GetInventory()
     {
 
         var request = new PlayFab.ClientModels.GetUserInventoryRequest
@@ -323,13 +326,53 @@ public class PlayfabManager : MonoBehaviour
     {
 
         gameData.playerMoney = Convert.ToDouble(result.VirtualCurrency["CA"]) / 100;
+        gameData.playerGold = Convert.ToInt32(result.VirtualCurrency["GO"]);
+        gameData.adsEnergy = Convert.ToInt32(result.VirtualCurrency["AD"]);
+
         /*playerData.energy = result.VirtualCurrency["EN"];
         playerData.adsEnergy = result.VirtualCurrency["AD"];
         moneyText.text = "EV: " + playerData.evMoney.ToString();*/
         //secondsLeftToRefreshEnergy = result.VirtualCurrencyRechargeTimes["EN"].SecondsToRecharge;
 
+        SellingItem[] storeItemButtons = FindObjectsOfType<SellingItem>();
+        foreach (var item in result.Inventory)
+        {
+            foreach (var i in storeItemButtons)
+            { 
+                if(i.nameId == item.ItemId)
+                {
+                    i.isBuyed = true;
+                }
+                
+            }
+        }
+        foreach (var i in storeItemButtons)
+        {
+            i.Setup();
+        }
+
 
     }
+
+    public void MakePurchase(string id, double price)
+    {
+        
+        var request = new PurchaseItemRequest
+        {
+            CatalogVersion = "Items Catalog",
+            ItemId = id,
+            Price = Convert.ToInt32(price * 100),
+            VirtualCurrency = "CA"
+        };
+        PlayFabClientAPI.PurchaseItem(request, OnPurchaseSuccess, OnError);
+    }
+
+    void OnPurchaseSuccess(PurchaseItemResult result)
+    {
+        Debug.Log("Purchase complete");
+        GetInventory();
+    }
+
 
 
 

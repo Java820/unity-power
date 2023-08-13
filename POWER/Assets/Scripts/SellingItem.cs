@@ -29,19 +29,10 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
 
     void Start()
     {
+        Setup();
+        playfabManager.GetInventory();
+
         itemImage.sprite = itemSprite;
-
-        if (isBuyed)
-        {
-            if (isEquipped)
-            {
-
-            }
-        }
-        else
-        {
-            priceText.text = "$" + price.ToString();
-        }
         nameText.text = Lean.Localization.LeanLocalization.GetTranslationText(nameId);
     }
 
@@ -55,26 +46,68 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
     {
         if (isBuyed)
         {
+            /* if (isEquipped)
+            {
+                UnEquip();
+            }
+            else
+            {
+                Equip();
+            }*/
             Equip();
         }
         else
         {
             Buy();
         }
-        playfabManager.SavePlayerData();
-        playfabManager.SaveGameDictionary();
+        playfabManager.GetInventory();
     }
 
     void Buy() 
     {
         if (gameData.playerMoney >= price)
-        { 
+        {
             //Comprar
+            
+            ModalManager.Show("", Lean.Localization.LeanLocalization.GetTranslationText("confirm_purchase"), new[] { new ModalButton() { Text = Lean.Localization.LeanLocalization.GetTranslationText("yes"),Callback = BuyAction}, new ModalButton() { Text = "No"} });
+
         }
         else 
         {
             ModalManager.Show("", Lean.Localization.LeanLocalization.GetTranslationText("no_money"), new[] { new ModalButton() { Text = "OK" } });
         }
+    }
+
+    void BuyAction()
+    {
+        playfabManager.MakePurchase(nameId, price);
+    }
+
+    public void Setup()
+    {
+        if (nameId.StartsWith("skin"))
+        {
+            if (gameData.playerSkin == nameId)
+            {
+                Equip();
+            }
+            else
+            {
+                UnEquip();
+            }
+        }
+        if (isBuyed)
+        {
+            if (isEquipped)
+            {
+
+            }
+        }
+        else
+        {
+            priceText.text = "$" + price.ToString();
+        }
+
     }
 
     void Equip()
@@ -84,5 +117,15 @@ public class SellingItem : MonoBehaviour, System.IComparable<SellingItem>
             gameData.playerSkin = nameId;
             playerController.SetupSkin(nameId);
         }
+        isEquipped = true;
+        priceText.text = "x";
+    }
+    void UnEquip()
+    {
+        if (nameId.StartsWith("skin"))
+        {
+        }
+        isEquipped = false;
+        priceText.text = "-";
     }
 }

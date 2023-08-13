@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -16,10 +17,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] EnergyGenerator[] nuclearFisionGenerators;
     [SerializeField] EnergyGenerator[] nuclearFusionGenerators;
 
+
     PlayfabManager playfabManager;
     GameData gameData;
 
     float actualBoostTimer = 0;
+
+    [SerializeField] Button rewardedGoldButton;
 
     void Awake()
     {
@@ -75,6 +79,8 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        Lean.Localization.LeanLocalization.SetToken("ADSLIMIT", gameData.adsEnergy.ToString());
+
         if (actualBoostTimer > 0)
         {
             actualBoostTimer -= 1 * Time.deltaTime;
@@ -84,11 +90,29 @@ public class GameManager : MonoBehaviour
         {
             gameData.playerMultiplier = 1f;
         }
+
+        if (gameData.adsEnergy >= 1)
+        {
+            rewardedGoldButton.interactable = true;
+        }
+        else
+        {
+            rewardedGoldButton.interactable = false;
+        }
+
     }
 
     public void OpenLink(string url)
     {
         Application.OpenURL(url);
+    }
+    public void OpenPanel(GameObject panel)
+    {
+        panel.SetActive(true);
+    }
+    public void ClosePanel(GameObject panel)
+    {
+        panel.SetActive(false);
     }
 
     public void GoldMultiplierBoost(int goldAmount)
@@ -96,5 +120,17 @@ public class GameManager : MonoBehaviour
         actualBoostTimer += goldAmount * 60;
         playfabManager.UseVC("GO", Convert.ToInt32(goldAmount));
     }
+
+    public void FreeGoldButton()
+    {
+
+        ModalManager.Show(Lean.Localization.LeanLocalization.GetTranslationText("free_gold"), Lean.Localization.LeanLocalization.GetTranslationText("free_gold_text"), new[] { new ModalButton() { Text = Lean.Localization.LeanLocalization.GetTranslationText("yes"), Callback = CallFreeGoldAd }, new ModalButton() { Text = "No" } });
+    }
+
+    void CallFreeGoldAd()
+    {
+        //TODO Llamar a call ad en el ads manager
+    }
+
 
 }

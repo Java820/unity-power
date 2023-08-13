@@ -77,7 +77,7 @@ public class EnergyGenerator : MonoBehaviour
     {
         if (isUnlocked)
         {
-            if (accumulatedProduction < topProduction)
+            if (accumulatedProduction < topProduction * Convert.ToInt32(gameData.playerMultiplier))
             {
                 if (timer > 0)
                 {
@@ -95,7 +95,7 @@ public class EnergyGenerator : MonoBehaviour
     }
     void GenerateEnergy()
     {
-        accumulatedProduction += productionBaseIncome;
+        accumulatedProduction += productionBaseIncome * Convert.ToInt32(gameData.playerMultiplier);
         productionAccumulatedText.text = accumulatedProduction.ToString();
     }
 
