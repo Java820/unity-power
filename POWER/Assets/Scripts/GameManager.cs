@@ -20,19 +20,80 @@ public class GameManager : MonoBehaviour
 
     PlayfabManager playfabManager;
     GameData gameData;
+    GoogleAdsManager googleAdsManager;
 
     float actualBoostTimer = 0;
 
     [SerializeField] Button rewardedGoldButton;
+
+    [NonSerialized] float interstitialAdTimer = 60;
+    [NonSerialized] float actualAdTimer;
+    [NonSerialized] public bool adShowable = false;
+
+    TextMeshProUGUI boostTimerText;
+
+
 
     void Awake()
     {
         //UpdateQuantity();
         playfabManager = GameObject.Find("Managers").GetComponent<PlayfabManager>();
         gameData = GameObject.Find("Managers").GetComponent<GameData>();
+        googleAdsManager = GameObject.Find("Managers").GetComponent<GoogleAdsManager>();
+        boostTimerText = GameObject.Find("x2 Power Timer").GetComponent<TextMeshProUGUI>();
 
     }
-    public void UpdateQuantity()
+
+    private void Start()
+    {
+        actualAdTimer = interstitialAdTimer;
+    }
+
+    void Update()
+    {
+        Lean.Localization.LeanLocalization.SetToken("ADSLIMIT", gameData.adsEnergy.ToString());
+
+        if (actualBoostTimer > 0)
+        {
+            actualBoostTimer -= 1 * Time.deltaTime;
+            gameData.playerMultiplier = 2f;
+            boostTimerText.enabled = true;
+
+            TimeSpan time = TimeSpan.FromSeconds(actualBoostTimer);
+            boostTimerText.text = "<sprite=0>x2 - "+ time.ToString("mm':'ss");
+        }
+        else
+        {
+            gameData.playerMultiplier = 1f;
+            boostTimerText.enabled = false;
+        }
+
+        if (gameData.adsEnergy >= 1)
+        {
+            rewardedGoldButton.interactable = true;
+        }
+        else
+        {
+            rewardedGoldButton.interactable = false;
+        }
+
+        if (actualAdTimer > 0)
+        {
+            if (adShowable == false)
+            {
+                actualAdTimer -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            adShowable = true;
+            actualAdTimer = interstitialAdTimer;
+        }
+
+    }
+
+
+    public void UpdateGeneratorsQuantity()
     {
 
         //Revisa cada uno de los generadores para checar a los que estan activos
@@ -72,33 +133,18 @@ public class GameManager : MonoBehaviour
                 Debug.Log(i + ": " + seiso);
             }*/
 
-            i.UpdateGenerator();
-
-        }
-    }
-
-    void Update()
-    {
-        Lean.Localization.LeanLocalization.SetToken("ADSLIMIT", gameData.adsEnergy.ToString());
-
-        if (actualBoostTimer > 0)
-        {
-            actualBoostTimer -= 1 * Time.deltaTime;
-            gameData.playerMultiplier = 2f;
-        }
-        else
-        {
-            gameData.playerMultiplier = 1f;
         }
 
-        if (gameData.adsEnergy >= 1)
+
+
+        EnergyGenerator[] allGenerators = FindObjectsOfType<EnergyGenerator>();
+
+        foreach (var item in allGenerators)
         {
-            rewardedGoldButton.interactable = true;
+            item.UpdateGenerator();
         }
-        else
-        {
-            rewardedGoldButton.interactable = false;
-        }
+
+
 
     }
 
@@ -118,7 +164,7 @@ public class GameManager : MonoBehaviour
     public void GoldMultiplierBoost(int goldAmount)
     {
         actualBoostTimer += goldAmount * 60;
-        playfabManager.UseVC("GO", Convert.ToInt32(goldAmount));
+        playfabManager.UseVC("GO", goldAmount);
     }
 
     public void FreeGoldButton()
@@ -129,7 +175,7 @@ public class GameManager : MonoBehaviour
 
     void CallFreeGoldAd()
     {
-        //TODO Llamar a call ad en el ads manager
+        googleAdsManager.ShowGoldRewardedAd();
     }
 
 

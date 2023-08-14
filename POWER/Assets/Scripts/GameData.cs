@@ -11,7 +11,6 @@ public class GameData : MonoBehaviour
     public string playerName;
     public string playerSkin;
     public int playerPower;
-    public int dummyPower;
     public double playerMoney;
     public int playerGold;
     public double playerMultiplier = 1;
@@ -48,6 +47,7 @@ public class GameData : MonoBehaviour
 
     public IEnumerator AddPower(int scoreToAdd)
     {
+        int dummyPower = playerPower;
         while (playerPower < (dummyPower + scoreToAdd))
         {
             LeanTween.scaleY(powerText.gameObject, 1.125f, 0.025f).setOnComplete(ReturnPower);
@@ -57,7 +57,7 @@ public class GameData : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
 
         }
-        dummyPower = playerPower;
+        //dummyPower = playerPower;
         yield break;
     }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+
 //public enum GeneratorType { ToyBattery, CarBattery, GasolineGenerator, SolarPanel, EolicTurbine, TeslaGenerator, NuclearFision, NuclearFusion }
 public class EnergyGenerator : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class EnergyGenerator : MonoBehaviour
     GameManager gameManager;
     GameData gameData;
     PlayfabManager playfabManager;
+    GoogleAdsManager googleAdsManager;
     Animator anim;
     [SerializeField] ParticleSystem dustExplosion;
     [SerializeField] Transform productionBar;
@@ -49,14 +51,24 @@ public class EnergyGenerator : MonoBehaviour
         gameManager = GameObject.Find("Managers").GetComponent<GameManager>();
         gameData = GameObject.Find("Managers").GetComponent<GameData>();
         playfabManager = GameObject.Find("Managers").GetComponent<PlayfabManager>();
+        googleAdsManager = GameObject.Find("Managers").GetComponent<GoogleAdsManager>();
         anim = GetComponent<Animator>();
     }
     void Start()
     {
         timer = 0;
         actualCost = startCost;
-        UpdateGenerator();
         initialScale = productionBar.localScale.x;
+        timer = delay;
+    }
+
+    public void newStart()
+    {
+        if (gameData.gameDictionary.ContainsKey(id))
+        {
+            isUnlocked = true;
+        }
+        gameManager.UpdateGeneratorsQuantity();
     }
 
     public void UpdateGenerator()
@@ -111,18 +123,27 @@ public class EnergyGenerator : MonoBehaviour
         //TODO: Agregar que cueste dinero hacer esto
         if (gameData.playerMoney >= actualCost)
         {
-            playfabManager.UseVC("CA", actualCost);
             isUnlocked = true;
+
+            gameData.gameDictionary.Add(id, isUnlocked);
+            playfabManager.UseVC("CA", actualCost);
             anim.SetBool("isUnlocked", isUnlocked);
             dustExplosion.Play();
-            gameManager.UpdateQuantity();
+            gameManager.UpdateGeneratorsQuantity();
         }
 
     }
 
     public void GeneratorButton()
     {
-
+        if (gameManager.adShowable == true)
+        {
+            if (UnityEngine.Random.Range(0, 2) == 0)
+            {
+                googleAdsManager.ShowInterstitial();
+            }
+        
+        }
         if (isUnlocked)
         {
             GetEnergy();

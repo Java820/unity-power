@@ -30,8 +30,9 @@ public class PlayfabManager : MonoBehaviour
     void Awake()
     {
         gameData = this.gameObject.GetComponent<GameData>();
+        gameManager = this.gameObject.GetComponent<GameManager>();
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-        versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
+        //versionText = GameObject.Find("Version Text").GetComponent<TextMeshProUGUI>();
 
 
     }
@@ -50,6 +51,13 @@ public class PlayfabManager : MonoBehaviour
         //LeanTween.moveY(logo.GetComponent<RectTransform>(), 10f, 1.75f).setLoopPingPong().setEase(easeType);
         menuPanel.SetActive(false);
         playerController.SetupSkin(gameData.playerSkin);
+
+        EnergyGenerator[] allGenerators = FindObjectsOfType<EnergyGenerator>();
+
+        foreach (var item in allGenerators)
+        {
+            item.newStart();
+        }
     }
 
     private void OnDisable()
@@ -158,7 +166,11 @@ public class PlayfabManager : MonoBehaviour
     }
     public void AddVC(string vc, double amount)
     {
-        int newAmount = Convert.ToInt32(amount * 100);
+        int newAmount = Convert.ToInt32(amount);
+        if (vc == "CA")
+        {
+            newAmount = Convert.ToInt32(amount * 100);
+        }
         AddUserVirtualCurrencyRequest request = new AddUserVirtualCurrencyRequest
         {
             Amount = newAmount,
@@ -168,7 +180,11 @@ public class PlayfabManager : MonoBehaviour
     }
     public void UseVC(string vc, double amount)
     {
-        int newAmount = Convert.ToInt32(amount * 100);
+        int newAmount = Convert.ToInt32(amount);
+        if (vc == "CA")
+        {
+            newAmount = Convert.ToInt32(amount * 100);
+        }
         SubtractUserVirtualCurrencyRequest request = new SubtractUserVirtualCurrencyRequest
         {
             Amount = newAmount,
@@ -250,9 +266,10 @@ public class PlayfabManager : MonoBehaviour
     private void OnDataRecieved(GetUserDataResult result)
     {
 
-        if (result.Data != null && result.Data.ContainsKey("Skin") && result.Data.ContainsKey("GameDictionary"))
+        if (result.Data != null && result.Data.ContainsKey("Skin") && result.Data.ContainsKey("GameDictionary") && result.Data.ContainsKey("Exchange"))
         {
             gameData.playerSkin = result.Data["Skin"].Value;
+            gameData.exchange = Convert.ToDouble(result.Data["Exchange"].Value);
             //Debug.Log(result.Data["Levels"].Value);
 
             gameData.gameDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(result.Data["GameDictionary"].Value);
@@ -275,8 +292,8 @@ public class PlayfabManager : MonoBehaviour
         {
             Data = new Dictionary<string, string>
                 {
-                    {"Skin", gameData.playerSkin}
-                    /*{"Helmet", player_helmet},
+                    {"Skin", gameData.playerSkin},
+                    {"Exchange", gameData.exchange.ToString()}/*,
                     {"Chestplate", player_chestplate},
                     {"Arms", player_arms},
                     {"Pants", player_pants},

@@ -7,6 +7,7 @@ public class Cashier : MonoBehaviour
 {
     GameData gameData;
     PlayfabManager playfabManager;
+    GoogleAdsManager googleAdsManager;
     [SerializeField] TextMeshPro exchangeText;
 
     double cashierMultiplier = 1;
@@ -15,10 +16,10 @@ public class Cashier : MonoBehaviour
     {
         gameData = GameObject.Find("Managers").GetComponent<GameData>();
         playfabManager = GameObject.Find("Managers").GetComponent<PlayfabManager>();
+        googleAdsManager = GameObject.Find("Managers").GetComponent<GoogleAdsManager>();
     }
     void Start()
     {
-
     }
 
     void Update()
@@ -34,7 +35,7 @@ public class Cashier : MonoBehaviour
     double CalculateAdSellPrice(int power)
     {
         double sellPrice = ((power * gameData.exchange) * cashierMultiplier);
-        sellPrice += sellPrice * 0.20;
+        sellPrice += sellPrice * 0.50;
         return sellPrice;
     }
 
@@ -54,7 +55,7 @@ public class Cashier : MonoBehaviour
 
         yield return null;
         ModalManager.Show(Lean.Localization.LeanLocalization.GetTranslationText("title_sell"), Lean.Localization.LeanLocalization.GetTranslationText("body_sell"), new[] { new ModalButton() { Text = Lean.Localization.LeanLocalization.GetTranslationText("sell"), Callback = Sell },
-                                                                                                                                                                            new ModalButton() { Text = Lean.Localization.LeanLocalization.GetTranslationText("ad_sell"), Callback = AdSell},
+                                                                                                                                                                            new ModalButton() { Text = Lean.Localization.LeanLocalization.GetTranslationText("ad_sell"), Callback = CallAd},
                                                                                                                                                                             new ModalButton() { Text = Lean.Localization.LeanLocalization.GetTranslationText("cancel")}});
 
     }
@@ -65,7 +66,11 @@ public class Cashier : MonoBehaviour
         playfabManager.AddVC("CA", CalculateSellPrice(gameData.playerPower));
         gameData.playerPower = 0;
     }
-    void AdSell()
+    void CallAd()
+    {
+        googleAdsManager.Show50RewardedAd();
+    }
+    public void AdSell()
     {
         Debug.Log("Vendido por: " + CalculateAdSellPrice(gameData.playerPower));
         playfabManager.AddVC("CA", CalculateAdSellPrice(gameData.playerPower));
