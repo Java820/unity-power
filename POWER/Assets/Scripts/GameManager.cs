@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] Button rewardedGoldButton;
 
-    [NonSerialized] float interstitialAdTimer = 60;
+    [NonSerialized] float interstitialAdTimer = 90;
     [NonSerialized] float actualAdTimer;
     [NonSerialized] public bool adShowable = false;
 
