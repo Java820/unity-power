@@ -266,10 +266,11 @@ public class PlayfabManager : MonoBehaviour
     private void OnDataRecieved(GetUserDataResult result)
     {
 
-        if (result.Data != null && result.Data.ContainsKey("Skin") && result.Data.ContainsKey("GameDictionary") && result.Data.ContainsKey("Exchange"))
+        if (result.Data != null && result.Data.ContainsKey("Skin") && result.Data.ContainsKey("GameDictionary") && result.Data.ContainsKey("Exchange") && result.Data.ContainsKey("PlayerMultiplier"))
         {
             gameData.playerSkin = result.Data["Skin"].Value;
             gameData.exchange = Convert.ToDouble(result.Data["Exchange"].Value);
+            gameData.playerMultiplier = Convert.ToDouble(result.Data["PlayerMultiplier"].Value);
             //Debug.Log(result.Data["Levels"].Value);
 
             gameData.gameDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(result.Data["GameDictionary"].Value);
@@ -293,7 +294,8 @@ public class PlayfabManager : MonoBehaviour
             Data = new Dictionary<string, string>
                 {
                     {"Skin", gameData.playerSkin},
-                    {"Exchange", gameData.exchange.ToString()}/*,
+                    {"Exchange", gameData.exchange.ToString()},
+                    {"PlayerMultiplier", gameData.playerMultiplier.ToString()}/*,
                     {"Chestplate", player_chestplate},
                     {"Arms", player_arms},
                     {"Pants", player_pants},

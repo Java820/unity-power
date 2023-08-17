@@ -27,7 +27,7 @@ public class EnergyGenerator : MonoBehaviour
     [SerializeField] int accumulatedProduction;
     [SerializeField] double topProduction;
 
-
+    [SerializeField] bool isFirstGenerator = false;
 
     /*-----DATOS A GUARDAR-----*/
     //Esta desbloqueado
@@ -81,8 +81,22 @@ public class EnergyGenerator : MonoBehaviour
         }
         else
         {
+            if (isFirstGenerator)
+            {
+                unlockPriceText.text = "$: " + actualCost.ToString();
+            }
+            else
+            {
+                if (actualCost == 0)
+                {
+                    unlockPriceText.text = "";
+                }
+                else
+                {
+                    unlockPriceText.text = "$: " + actualCost.ToString();
+                }
 
-            unlockPriceText.text = "$: " + actualCost.ToString();
+            }
         }
     }
     void Update()
@@ -107,7 +121,7 @@ public class EnergyGenerator : MonoBehaviour
     }
     void GenerateEnergy()
     {
-        accumulatedProduction += productionBaseIncome * Convert.ToInt32(gameData.playerMultiplier);
+        accumulatedProduction += productionBaseIncome * Convert.ToInt32(gameManager.actualPlayerMultiplier);
         productionAccumulatedText.text = accumulatedProduction.ToString();
     }
 

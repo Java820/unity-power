@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     TextMeshProUGUI boostTimerText;
 
-
+    public double actualPlayerMultiplier;
 
     void Awake()
     {
@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         actualAdTimer = interstitialAdTimer;
+        actualPlayerMultiplier = gameData.playerMultiplier;
     }
 
     void Update()
@@ -56,7 +57,7 @@ public class GameManager : MonoBehaviour
         if (actualBoostTimer > 0)
         {
             actualBoostTimer -= 1 * Time.deltaTime;
-            gameData.playerMultiplier = 2f;
+            actualPlayerMultiplier = (gameData.playerMultiplier * 2);
             boostTimerText.enabled = true;
 
             TimeSpan time = TimeSpan.FromSeconds(actualBoostTimer);
@@ -64,7 +65,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            gameData.playerMultiplier = 1f;
+            actualPlayerMultiplier = gameData.playerMultiplier;
             boostTimerText.enabled = false;
         }
 
