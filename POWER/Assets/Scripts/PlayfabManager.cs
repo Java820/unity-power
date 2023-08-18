@@ -395,6 +395,7 @@ public class PlayfabManager : MonoBehaviour
         GetInventory();
     }
 
+<<<<<<< Updated upstream
     public void SetPremium()
     {
         gameData.isUserPremium = true;
@@ -409,6 +410,12 @@ public class PlayfabManager : MonoBehaviour
     }
 
 
+=======
+    public void AddGold(int num)
+    {
+        AddVC("GO", num);
+    }
+>>>>>>> Stashed changes
 
 
 
