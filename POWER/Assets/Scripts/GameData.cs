@@ -14,6 +14,7 @@ public class GameData : MonoBehaviour
     public double playerMoney;
     public int playerGold;
     public double playerMultiplier;
+    public bool isUserPremium;
     public double exchange;
 
     public int adsEnergy;

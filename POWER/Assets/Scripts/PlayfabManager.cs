@@ -266,11 +266,12 @@ public class PlayfabManager : MonoBehaviour
     private void OnDataRecieved(GetUserDataResult result)
     {
 
-        if (result.Data != null && result.Data.ContainsKey("Skin") && result.Data.ContainsKey("GameDictionary") && result.Data.ContainsKey("Exchange") && result.Data.ContainsKey("PlayerMultiplier"))
+        if (result.Data != null && result.Data.ContainsKey("Skin") && result.Data.ContainsKey("GameDictionary") && result.Data.ContainsKey("Exchange") && result.Data.ContainsKey("PlayerMultiplier") && result.Data.ContainsKey("Premium"))
         {
             gameData.playerSkin = result.Data["Skin"].Value;
             gameData.exchange = Convert.ToDouble(result.Data["Exchange"].Value);
             gameData.playerMultiplier = Convert.ToDouble(result.Data["PlayerMultiplier"].Value);
+            gameData.isUserPremium = Convert.ToBoolean(result.Data["Premium"].Value);
             //Debug.Log(result.Data["Levels"].Value);
 
             gameData.gameDictionary = JsonConvert.DeserializeObject<Dictionary<string, bool>>(result.Data["GameDictionary"].Value);
@@ -295,7 +296,9 @@ public class PlayfabManager : MonoBehaviour
                 {
                     {"Skin", gameData.playerSkin},
                     {"Exchange", gameData.exchange.ToString()},
-                    {"PlayerMultiplier", gameData.playerMultiplier.ToString()}/*,
+                    {"PlayerMultiplier", gameData.playerMultiplier.ToString()},
+                    {"Premium", gameData.isUserPremium.ToString()}
+                    /*,
                     {"Chestplate", player_chestplate},
                     {"Arms", player_arms},
                     {"Pants", player_pants},
@@ -390,6 +393,19 @@ public class PlayfabManager : MonoBehaviour
     {
         Debug.Log("Purchase complete");
         GetInventory();
+    }
+
+    public void SetPremium()
+    {
+        gameData.isUserPremium = true;
+        var request = new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+                {
+                    {"Premium", "true"}
+                }
+        };
+        PlayFabClientAPI.UpdateUserData(request, OnDataSend, OnError);
     }
 
 
