@@ -395,27 +395,26 @@ public class PlayfabManager : MonoBehaviour
         GetInventory();
     }
 
-<<<<<<< Updated upstream
     public void SetPremium()
     {
         gameData.isUserPremium = true;
+        gameData.playerMultiplier = 2;
         var request = new UpdateUserDataRequest
         {
             Data = new Dictionary<string, string>
                 {
-                    {"Premium", "true"}
+                    {"Premium", "true"},
+                    {"PlayerMultiplier", "2"},
                 }
         };
         PlayFabClientAPI.UpdateUserData(request, OnDataSend, OnError);
     }
 
 
-=======
     public void AddGold(int num)
     {
         AddVC("GO", num);
     }
->>>>>>> Stashed changes
 
 
 

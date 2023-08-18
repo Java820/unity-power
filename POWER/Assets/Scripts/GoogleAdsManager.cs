@@ -15,12 +15,14 @@ public class GoogleAdsManager : MonoBehaviour
     PlayfabManager playfabManager;
     GameManager gameManager;
     Cashier cashier;
+    GameData gameData;
 
 
     void Awake()
     {
         playfabManager = this.gameObject.GetComponent<PlayfabManager>();
         gameManager = this.gameObject.GetComponent<GameManager>();
+        gameData = this.gameObject.GetComponent<GameData>();
         cashier = GameObject.Find("Cashier").GetComponent<Cashier>();
     }
     void Start()
@@ -54,9 +56,12 @@ public class GoogleAdsManager : MonoBehaviour
     }
     public void ShowInterstitial()
     {
-        interstitialAd.Show();
-        gameManager.adShowable = false;
-        RequestInterstitial();
+        if (gameData.isUserPremium == false)
+        {
+            interstitialAd.Show();
+            gameManager.adShowable = false;
+            RequestInterstitial();
+        }
     }
 
     public void RequestGoldRewarded()
