@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void Start()
+    public void Setup()
     {
         actualAdTimer = interstitialAdTimer;
         actualPlayerMultiplier = gameData.playerMultiplier;
@@ -135,6 +135,45 @@ public class GameManager : MonoBehaviour
             }*/
 
         }
+
+
+        foreach (EnergyGenerator i in carBatteryGenerators)
+        {
+            int generatorsOfThisType = 0;
+
+            //Revisa cada uno de los generadores y los que estan activos, los suma a una variable
+            foreach (EnergyGenerator j in carBatteryGenerators)
+            {
+
+                if (j.isUnlocked == true)
+                {
+                    generatorsOfThisType++;
+                }
+
+
+            }
+            //Startcos es startcos del inspector, luego va este ciclo
+            double initialCost = i.startCost;
+
+            for (int x = 1; x <= generatorsOfThisType; x++)
+            {
+                //Debug.Log(x + " atnes " + initialCost);
+                initialCost = Math.Round(initialCost * Math.Pow(i.rateGrowth, x), 2);
+                //Debug.Log(x + " despues " + initialCost);
+
+            }
+            i.actualCost = initialCost;
+
+
+            /*double seiso = 3.74;
+            for (int i = 1; i <= 8; i++)
+            {
+                seiso = Math.Round(seiso * Math.Pow(1.07, i), 2);
+                Debug.Log(i + ": " + seiso);
+            }*/
+
+        }
+
 
 
 

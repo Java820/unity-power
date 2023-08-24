@@ -58,6 +58,7 @@ public class PlayfabManager : MonoBehaviour
         {
             item.newStart();
         }
+        gameManager.Setup();
     }
 
     private void OnDisable()
